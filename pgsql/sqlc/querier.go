@@ -6,18 +6,78 @@ package pgsql
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
+	AssignClrSection(ctx context.Context, arg AssignClrSectionParams) error
+	AssignCompressor(ctx context.Context, arg AssignCompressorParams) error
+	AssignCooler(ctx context.Context, arg AssignCoolerParams) error
+	AssignCylinder(ctx context.Context, arg AssignCylinderParams) error
+	AssignEngine(ctx context.Context, arg AssignEngineParams) error
+	AssignMotor(ctx context.Context, arg AssignMotorParams) error
 	CmpPkgChgComp(ctx context.Context, arg CmpPkgChgCompParams) (AssetsCmppkg, error)
 	CmpPkgChgDriver(ctx context.Context, arg CmpPkgChgDriverParams) (AssetsCmppkg, error)
+	CreateClrSection(ctx context.Context, arg CreateClrSectionParams) (AssetsClrSection, error)
 	CreateCmpPkg(ctx context.Context, arg CreateCmpPkgParams) (AssetsCmppkg, error)
+	CreateCompressor(ctx context.Context, arg CreateCompressorParams) (AssetsCompressor, error)
+	CreateCooler(ctx context.Context, arg CreateCoolerParams) (AssetsCooler, error)
+	CreateCylinder(ctx context.Context, arg CreateCylinderParams) (AssetsCylinder, error)
+	CreateEngineDriver(ctx context.Context, arg CreateEngineDriverParams) error
+	CreateMotorDriver(ctx context.Context, arg CreateMotorDriverParams) error
+	DeactivateClrSection(ctx context.Context, id int64) (AssetsClrSection, error)
+	DeactivateCmpPkg(ctx context.Context, id int64) (AssetsCmppkg, error)
+	DeactivateCompressor(ctx context.Context, id int64) error
+	DeactivateCooler(ctx context.Context, id int64) error
+	DeactivateCylinder(ctx context.Context, id int64) (AssetsCylinder, error)
+	DeactivateEngine(ctx context.Context, id int64) error
+	DeactivateMotor(ctx context.Context, id int64) error
+	DeletDriver(ctx context.Context, id int64) error
+	DeleteClrSection(ctx context.Context, id int64) error
 	DeleteCmpPkg(ctx context.Context, id int64) error
+	DeleteCylinder(ctx context.Context, id int64) error
+	DisposeClrSection(ctx context.Context, id int64) (AssetsClrSection, error)
+	DisposeCmpPkg(ctx context.Context, id int64) (AssetsCmppkg, error)
+	DisposeCompressor(ctx context.Context) error
+	DisposeCylinder(ctx context.Context, id int64) (AssetsCylinder, error)
+	GetAvailCompressors(ctx context.Context) ([]AssetsCompressor, error)
+	GetAvailCoolers(ctx context.Context) ([]AssetsCooler, error)
+	GetAvailEngines(ctx context.Context) ([]AssetsEngine, error)
+	GetAvailMotors(ctx context.Context) ([]AssetsMotor, error)
+	GetClrSectionByID(ctx context.Context, id int64) (AssetsClrSection, error)
+	GetClrSectionBySerial(ctx context.Context, serialNumber string) (AssetsClrSection, error)
+	GetClrSections(ctx context.Context) ([]AssetsClrSection, error)
 	GetCmpPkgByID(ctx context.Context, id int64) (AssetsCmppkg, error)
 	GetCmpPkgByUnitNumber(ctx context.Context, unitNumber string) (AssetsCmppkg, error)
 	GetCmpPkgs(ctx context.Context) ([]AssetsCmppkg, error)
 	GetCmpPkgsByEngine(ctx context.Context, arg GetCmpPkgsByEngineParams) ([]GetCmpPkgsByEngineRow, error)
 	GetCmpPkgsByStages(ctx context.Context, stages string) ([]AssetsCmppkg, error)
+	GetCompressorByID(ctx context.Context, id int64) (AssetsCompressor, error)
+	GetCompressorByMakeModel(ctx context.Context, arg GetCompressorByMakeModelParams) ([]AssetsCompressor, error)
+	GetCompressorBySerial(ctx context.Context, serialNumber string) (AssetsCompressor, error)
+	GetCompressors(ctx context.Context) ([]AssetsCompressor, error)
+	GetCompressorsByMake(ctx context.Context, make string) ([]AssetsCompressor, error)
+	GetCoolerByID(ctx context.Context, id int64) (AssetsCooler, error)
+	GetCoolerByJob(ctx context.Context, jobNumber string) (AssetsCooler, error)
+	GetCoolerByMakeModel(ctx context.Context, arg GetCoolerByMakeModelParams) ([]AssetsCooler, error)
+	GetCoolers(ctx context.Context) ([]AssetsCooler, error)
+	GetCoolersByMake(ctx context.Context, make string) ([]AssetsCooler, error)
+	GetCylinderByID(ctx context.Context, id int64) (AssetsCylinder, error)
+	GetCylinderBySerial(ctx context.Context, serialNumber string) (AssetsCylinder, error)
+	GetCylinders(ctx context.Context) ([]AssetsCylinder, error)
+	GetCylindersByMakeModel(ctx context.Context, arg GetCylindersByMakeModelParams) ([]AssetsCylinder, error)
+	GetDriverById(ctx context.Context, id int64) (AssetsDriver, error)
+	GetDriverByUnitID(ctx context.Context, unitID sql.NullInt32) (AssetsDriver, error)
+	GetEngineByID(ctx context.Context, id int64) (AssetsEngine, error)
+	GetEngineByMakeModel(ctx context.Context, arg GetEngineByMakeModelParams) ([]AssetsEngine, error)
+	GetEngineBySerial(ctx context.Context, serialNumber string) (AssetsEngine, error)
+	GetEngines(ctx context.Context) ([]AssetsEngine, error)
+	GetEnginesByMake(ctx context.Context, make string) ([]AssetsEngine, error)
+	GetMotorByID(ctx context.Context, id int64) (AssetsMotor, error)
+	GetMotorByMakeModel(ctx context.Context, arg GetMotorByMakeModelParams) ([]AssetsMotor, error)
+	GetMotorBySerial(ctx context.Context, serialNumber string) (AssetsMotor, error)
+	GetMotors(ctx context.Context) ([]AssetsMotor, error)
+	GetMotorsByMake(ctx context.Context, make string) ([]AssetsMotor, error)
 }
 
 var _ Querier = (*Queries)(nil)

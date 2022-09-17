@@ -108,6 +108,7 @@ type AssetsClrSection struct {
 	NumTubes     sql.NullInt32  `json:"num_tubes"`
 	NumRows      sql.NullInt32  `json:"num_rows"`
 	Passes       sql.NullInt32  `json:"passes"`
+	CoolerID     sql.NullInt32  `json:"cooler_id"`
 	OpStatus     AssetsOpStatus `json:"op_status"`
 	CreatedAt    time.Time      `json:"created_at"`
 	ModifiedAt   time.Time      `json:"modified_at"`
@@ -148,7 +149,9 @@ type AssetsCompressor struct {
 	Make         string         `json:"make"`
 	Model        string         `json:"model"`
 	SerialNumber string         `json:"serial_number"`
+	Throws       int32          `json:"throws"`
 	OpStatus     AssetsOpStatus `json:"op_status"`
+	UnitID       sql.NullInt32  `json:"unit_id"`
 	CylinderID   sql.NullInt32  `json:"cylinder_id"`
 	CreatedAt    time.Time      `json:"created_at"`
 	ModifiedAt   time.Time      `json:"modified_at"`
@@ -158,8 +161,10 @@ type AssetsCooler struct {
 	ID         int64          `json:"id"`
 	Make       string         `json:"make"`
 	Model      string         `json:"model"`
+	Size       int32          `json:"size"`
 	JobNumber  string         `json:"job_number"`
 	OpStatus   AssetsOpStatus `json:"op_status"`
+	UnitID     sql.NullInt32  `json:"unit_id"`
 	SectionID  sql.NullInt32  `json:"section_id"`
 	CreatedAt  time.Time      `json:"created_at"`
 	ModifiedAt time.Time      `json:"modified_at"`
@@ -169,8 +174,10 @@ type AssetsCylinder struct {
 	ID           int64          `json:"id"`
 	Make         string         `json:"make"`
 	Model        string         `json:"model"`
+	Bore         float64        `json:"bore"`
 	Mawp         int32          `json:"mawp"`
 	SerialNumber string         `json:"serial_number"`
+	CompID       sql.NullInt32  `json:"comp_id"`
 	OpStatus     AssetsOpStatus `json:"op_status"`
 	CreatedAt    time.Time      `json:"created_at"`
 	ModifiedAt   time.Time      `json:"modified_at"`
@@ -180,6 +187,7 @@ type AssetsDriver struct {
 	ID         int64         `json:"id"`
 	EngineID   sql.NullInt32 `json:"engine_id"`
 	MotorID    sql.NullInt32 `json:"motor_id"`
+	UnitID     sql.NullInt32 `json:"unit_id"`
 	CreatedAt  time.Time     `json:"created_at"`
 	ModifiedAt time.Time     `json:"modified_at"`
 }
@@ -189,6 +197,7 @@ type AssetsEngine struct {
 	Make         string         `json:"make"`
 	Model        string         `json:"model"`
 	SerialNumber string         `json:"serial_number"`
+	UnitID       sql.NullInt32  `json:"unit_id"`
 	OpStatus     AssetsOpStatus `json:"op_status"`
 	CreatedAt    time.Time      `json:"created_at"`
 	ModifiedAt   time.Time      `json:"modified_at"`
@@ -199,6 +208,7 @@ type AssetsMotor struct {
 	Make         string         `json:"make"`
 	Model        string         `json:"model"`
 	SerialNumber string         `json:"serial_number"`
+	UnitID       sql.NullInt32  `json:"unit_id"`
 	OpStatus     AssetsOpStatus `json:"op_status"`
 	CreatedAt    time.Time      `json:"created_at"`
 	ModifiedAt   time.Time      `json:"modified_at"`

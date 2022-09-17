@@ -23,9 +23,9 @@ WHERE eng.make = $1 AND eng.model = $2;
 
 -- name: CreateCmpPkg :one
 INSERT INTO assets.CmpPkgs 
-(unit_number,stages)
+(unit_number,stages, drawing_ref)
 VALUES
-($1,$2)
+($1,$2, $3)
 RETURNING *;
 
 -- name: CmpPkgChgDriver :one
@@ -37,6 +37,18 @@ RETURNING *;
 -- name: CmpPkgChgComp :one
 UPDATE assets.CmpPkgs
 SET compressor_id = $2
+WHERE id = $1
+RETURNING *;
+
+-- name: DeactivateCmpPkg :one
+UPDATE assets.CmpPkgs
+SET op_status = "inactive"
+WHERE id = $1
+RETURNING *;
+
+-- name: DisposeCmpPkg :one
+UPDATE assets.CmpPkgs
+SET op_status = "disposed"
 WHERE id = $1
 RETURNING *;
 

@@ -80,19 +80,49 @@ func (q *Queries) CmpPkgChgDriver(ctx context.Context, arg CmpPkgChgDriverParams
 
 const createCmpPkg = `-- name: CreateCmpPkg :one
 INSERT INTO assets.CmpPkgs 
-(unit_number,stages)
+(unit_number,stages, drawing_ref)
 VALUES
-($1,$2)
+($1,$2, $3)
 RETURNING id, unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at
 `
 
 type CreateCmpPkgParams struct {
-	UnitNumber string `json:"unit_number"`
-	Stages     string `json:"stages"`
+	UnitNumber string      `json:"unit_number"`
+	Stages     string      `json:"stages"`
+	DrawingRef interface{} `json:"drawing_ref"`
 }
 
 func (q *Queries) CreateCmpPkg(ctx context.Context, arg CreateCmpPkgParams) (AssetsCmppkg, error) {
-	row := q.db.QueryRowContext(ctx, createCmpPkg, arg.UnitNumber, arg.Stages)
+	row := q.db.QueryRowContext(ctx, createCmpPkg, arg.UnitNumber, arg.Stages, arg.DrawingRef)
+	var i AssetsCmppkg
+	err := row.Scan(
+		&i.ID,
+		&i.UnitNumber,
+		&i.Stages,
+		&i.OpStatus,
+		&i.ComStatus,
+		&i.CurrentLocation,
+		&i.DriverID,
+		&i.CompressorID,
+		&i.CoolerID,
+		&i.VesselID,
+		&i.DrawingRef,
+		&i.Bom,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
+
+const deactivateCmpPkg = `-- name: DeactivateCmpPkg :one
+UPDATE assets.CmpPkgs
+SET op_status = "inactive"
+WHERE id = $1
+RETURNING id, unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at
+`
+
+func (q *Queries) DeactivateCmpPkg(ctx context.Context, id int64) (AssetsCmppkg, error) {
+	row := q.db.QueryRowContext(ctx, deactivateCmpPkg, id)
 	var i AssetsCmppkg
 	err := row.Scan(
 		&i.ID,
@@ -121,6 +151,35 @@ WHERE id = $1
 func (q *Queries) DeleteCmpPkg(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteCmpPkg, id)
 	return err
+}
+
+const disposeCmpPkg = `-- name: DisposeCmpPkg :one
+UPDATE assets.CmpPkgs
+SET op_status = "disposed"
+WHERE id = $1
+RETURNING id, unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at
+`
+
+func (q *Queries) DisposeCmpPkg(ctx context.Context, id int64) (AssetsCmppkg, error) {
+	row := q.db.QueryRowContext(ctx, disposeCmpPkg, id)
+	var i AssetsCmppkg
+	err := row.Scan(
+		&i.ID,
+		&i.UnitNumber,
+		&i.Stages,
+		&i.OpStatus,
+		&i.ComStatus,
+		&i.CurrentLocation,
+		&i.DriverID,
+		&i.CompressorID,
+		&i.CoolerID,
+		&i.VesselID,
+		&i.DrawingRef,
+		&i.Bom,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
 }
 
 const getCmpPkgByID = `-- name: GetCmpPkgByID :one
@@ -222,8 +281,7 @@ func (q *Queries) GetCmpPkgs(ctx context.Context) ([]AssetsCmppkg, error) {
 
 const getCmpPkgsByEngine = `-- name: GetCmpPkgsByEngine :many
 SELECT pkgs.unit_number, eng.make, eng.model
-FROM 
-assets.CmpPkgs pkgs
+FROM assets.CmpPkgs pkgs
 INNER JOIN assets.drivers dvr ON dvr.id = pkgs.driver_id
 INNER JOIN assets.engines eng ON eng.id = dvr.id
 WHERE eng.make = $1 AND eng.model = $2
