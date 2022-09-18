@@ -78,6 +78,7 @@ type Querier interface {
 	GetMotorBySerial(ctx context.Context, serialNumber string) (AssetsMotor, error)
 	GetMotors(ctx context.Context) ([]AssetsMotor, error)
 	GetMotorsByMake(ctx context.Context, make string) ([]AssetsMotor, error)
+	NewCmpPkg(ctx context.Context, arg NewCmpPkgParams) (AssetsCmppkg, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -8,6 +8,7 @@ package pgsql
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const cmpPkgChgComp = `-- name: CmpPkgChgComp :one
@@ -79,21 +80,45 @@ func (q *Queries) CmpPkgChgDriver(ctx context.Context, arg CmpPkgChgDriverParams
 }
 
 const createCmpPkg = `-- name: CreateCmpPkg :one
-INSERT INTO assets.CmpPkgs 
-(unit_number,stages, drawing_ref)
+INSERT INTO assets.CmpPkgs
+(unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at)
 VALUES
-($1,$2, $3)
+($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 RETURNING id, unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at
 `
 
 type CreateCmpPkgParams struct {
-	UnitNumber string      `json:"unit_number"`
-	Stages     string      `json:"stages"`
-	DrawingRef interface{} `json:"drawing_ref"`
+	UnitNumber      string        `json:"unit_number"`
+	Stages          string        `json:"stages"`
+	OpStatus        string        `json:"op_status"`
+	ComStatus       string        `json:"com_status"`
+	CurrentLocation string        `json:"current_location"`
+	DriverID        sql.NullInt32 `json:"driver_id"`
+	CompressorID    sql.NullInt32 `json:"compressor_id"`
+	CoolerID        sql.NullInt32 `json:"cooler_id"`
+	VesselID        sql.NullInt32 `json:"vessel_id"`
+	DrawingRef      interface{}   `json:"drawing_ref"`
+	Bom             sql.NullInt32 `json:"bom"`
+	CreatedAt       time.Time     `json:"created_at"`
+	ModifiedAt      time.Time     `json:"modified_at"`
 }
 
 func (q *Queries) CreateCmpPkg(ctx context.Context, arg CreateCmpPkgParams) (AssetsCmppkg, error) {
-	row := q.db.QueryRowContext(ctx, createCmpPkg, arg.UnitNumber, arg.Stages, arg.DrawingRef)
+	row := q.db.QueryRowContext(ctx, createCmpPkg,
+		arg.UnitNumber,
+		arg.Stages,
+		arg.OpStatus,
+		arg.ComStatus,
+		arg.CurrentLocation,
+		arg.DriverID,
+		arg.CompressorID,
+		arg.CoolerID,
+		arg.VesselID,
+		arg.DrawingRef,
+		arg.Bom,
+		arg.CreatedAt,
+		arg.ModifiedAt,
+	)
 	var i AssetsCmppkg
 	err := row.Scan(
 		&i.ID,
@@ -362,4 +387,40 @@ func (q *Queries) GetCmpPkgsByStages(ctx context.Context, stages string) ([]Asse
 		return nil, err
 	}
 	return items, nil
+}
+
+const newCmpPkg = `-- name: NewCmpPkg :one
+INSERT INTO assets.CmpPkgs 
+(unit_number,stages, drawing_ref)
+VALUES
+($1,$2, $3)
+RETURNING id, unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at
+`
+
+type NewCmpPkgParams struct {
+	UnitNumber string      `json:"unit_number"`
+	Stages     string      `json:"stages"`
+	DrawingRef interface{} `json:"drawing_ref"`
+}
+
+func (q *Queries) NewCmpPkg(ctx context.Context, arg NewCmpPkgParams) (AssetsCmppkg, error) {
+	row := q.db.QueryRowContext(ctx, newCmpPkg, arg.UnitNumber, arg.Stages, arg.DrawingRef)
+	var i AssetsCmppkg
+	err := row.Scan(
+		&i.ID,
+		&i.UnitNumber,
+		&i.Stages,
+		&i.OpStatus,
+		&i.ComStatus,
+		&i.CurrentLocation,
+		&i.DriverID,
+		&i.CompressorID,
+		&i.CoolerID,
+		&i.VesselID,
+		&i.DrawingRef,
+		&i.Bom,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
 }

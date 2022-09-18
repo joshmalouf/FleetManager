@@ -21,11 +21,18 @@ INNER JOIN assets.drivers dvr ON dvr.id = pkgs.driver_id
 INNER JOIN assets.engines eng ON eng.id = dvr.id
 WHERE eng.make = $1 AND eng.model = $2;
 
--- name: CreateCmpPkg :one
+-- name: NewCmpPkg :one
 INSERT INTO assets.CmpPkgs 
 (unit_number,stages, drawing_ref)
 VALUES
 ($1,$2, $3)
+RETURNING *;
+
+-- name: CreateCmpPkg :one
+INSERT INTO assets.CmpPkgs
+(unit_number, stages, op_status, com_status, current_location, driver_id, compressor_id, cooler_id, vessel_id, drawing_ref, bom, created_at, modified_at)
+VALUES
+($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 RETURNING *;
 
 -- name: CmpPkgChgDriver :one
